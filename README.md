@@ -44,7 +44,7 @@ Configuration is managed via environment variables with sensible defaults:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `JWT_SECRET` | `dev-secret-change-me-in-production` | JWT signing secret (set in production!) |
+| `JWT_SECRET` | `dev-secret-change-me` | JWT signing secret (set in production!) |
 | `DB_PATH` | `app.db` | SQLite database file path |
 | `GRPC_ADDRESS` | `:50051` | gRPC server listen address |
 
