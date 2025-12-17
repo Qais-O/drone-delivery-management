@@ -427,5 +427,5 @@ MIT - All rights reserved.
 
 ## Support
 
-For issues, questions, or feature requests, please contact the development team.
+For issues, questions, or feature requests, please contact me at omari.qais@gmail.com.
 
