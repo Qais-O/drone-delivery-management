@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "droneDeliveryManagement/api/user/v1;userv1";
+
+// Status enumerates order states.
+enum Status {
+  UNSPECIFIED = 0;
+  PLACED = 1;
+  DELIVERED = 2;
+  EN_ROUTE = 3;
+  FAILED = 4;
+  TO_PICK_UP = 5;
+  WITHDRAWN = 6;
+}
+
+message Coordinates {
+  double lat = 1;
+  double lng = 2;
+}
+
+message Order {
+  int64 id = 1;
+  Coordinates origin = 2;
+  Coordinates destination = 3;
+  Status status = 4;
+  int64 submitted_by = 5;
+  string placement_date = 6; // RFC3339 or database string representation
+}
+
+message SetOrderRequest {
+  // The caller identity is taken from JWT; this request only carries coordinates.
+  Coordinates origin = 1;
+  Coordinates destination = 2;
+}
+message SetOrderResponse {
+  Order order = 1;
+}
+
+message WithdrawOrderRequest {
+  int64 order_id = 1;
+}
+message WithdrawOrderResponse {
+  Order order = 1; // updated order
+}
+
+message ListOrdersRequest {
+  // Standard pagination fields following Google API style.
+  // If unset, the server applies a sensible default page size.
+  int32 page_size = 1;   // max items to return (server-enforced cap)
+  string page_token = 2; // opaque token from a previous ListOrdersResponse
+}
+message ListOrdersResponse {
+  repeated Order orders = 1;
+  string next_page_token = 2; // empty if there are no more results
+}
+
+service UserOrderService {
+  rpc SetOrder(SetOrderRequest) returns (SetOrderResponse);
+  rpc WithdrawOrder(WithdrawOrderRequest) returns (WithdrawOrderResponse);
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse);
+}

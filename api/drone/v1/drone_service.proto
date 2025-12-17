@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package drone.v1;
+
+option go_package = "droneDeliveryManagement/api/drone/v1;dronev1";
+
+import "api/user/v1/user_service.proto"; // reuse Coordinates, Order, Status
+
+// Reserve an available order for this drone.
+message ReserveOrderRequest {}
+message ReserveOrderResponse {
+  user.v1.Order order = 1;
+}
+
+// Attempt to grab the currently assigned order (transition to EN_ROUTE when near pickup/origin).
+message GrabOrderRequest {}
+message GrabOrderResponse {
+  user.v1.Order order = 1;
+}
+
+// Complete the currently assigned order as delivered or failed (when near destination).
+message CompleteOrderRequest {
+  bool delivered = 1; // true: delivered, false: failed
+}
+message CompleteOrderResponse {
+  user.v1.Order order = 1;
+}
+
+// Mark this drone as broken and perform handoff logic if it has an assigned job.
+message MarkBrokenRequest {}
+message MarkBrokenResponse {
+  user.v1.Order order = 1; // if there was an order affected (may be empty)
+}
+
+// Heartbeat updates the drone's current location and speed.
+message HeartbeatRequest {
+  user.v1.Coordinates location = 1;
+  double speed_mph = 2;
+}
+message HeartbeatResponse {}
+
+// Get the currently assigned order and computed ETA in seconds.
+message GetAssignedOrderRequest {}
+message GetAssignedOrderResponse {
+  user.v1.Order order = 1;
+  double eta_seconds = 2;
+}
+
+service DroneService {
+  rpc ReserveOrder(ReserveOrderRequest) returns (ReserveOrderResponse);
+  rpc GrabOrder(GrabOrderRequest) returns (GrabOrderResponse);
+  rpc CompleteOrder(CompleteOrderRequest) returns (CompleteOrderResponse);
+  rpc MarkBroken(MarkBrokenRequest) returns (MarkBrokenResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc GetAssignedOrder(GetAssignedOrderRequest) returns (GetAssignedOrderResponse);
+}
