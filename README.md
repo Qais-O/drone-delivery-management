@@ -329,6 +329,91 @@ If you see "database is locked", check:
 - Ensure the port is not blocked by firewall
 - Verify the application started successfully
 
+## Quick Commands Reference
+
+### All Makefile Targets
+```bash
+make help              # Show all available commands
+make build            # Compile binary
+make run              # Build and run
+make test             # Run tests
+make test-coverage    # Generate coverage report
+make coverage-html    # Open HTML coverage
+make fmt              # Format code
+make lint             # Lint code
+make vet              # Vet code
+make proto            # Generate protobuf
+make clean            # Clean artifacts
+make deps             # Download dependencies
+make mod-tidy         # Tidy modules
+make docker-build     # Build Docker image
+make docker-run       # Run Docker container
+make check            # Run all checks (fmt + vet + lint + test)
+make install-tools    # Install dev tools
+```
+
+### Common Development Tasks
+
+**Add New Proto Message**
+1. Edit `.proto` file in `api/*/`
+2. Run `make proto`
+3. Update corresponding service handler
+
+**Add New Database Migration**
+1. Create `internal/db/migrations/NNNN_name.up.sql`
+2. Create `internal/db/migrations/NNNN_name.down.sql`
+3. Restart application (migrations auto-apply)
+
+**Add New Repository Method**
+1. Add interface in `repository/interfaces.go`
+2. Implement in `repository/*_repository.go`
+3. Add tests in `repository/*_repository_test.go`
+
+**Add New Configuration**
+1. Add to `internal/config/config.go` struct
+2. Add environment variable in `Load()` function
+3. Document in `README.md` and `.env.example`
+
+### Code Standards
+
+**File Naming**
+- `*_repository.go` - Repository implementations
+- `*_server.go` - gRPC service implementations
+- `*_test.go` - Test files
+
+**Naming Conventions**
+- Packages: lowercase, single word
+- Types: PascalCase
+- Functions: PascalCase (public), camelCase (private)
+- Constants: UPPER_SNAKE_CASE
+- Variables: camelCase
+- Interfaces: Name ending with `I` (e.g., `UserRepositoryI`)
+
+**Package Organization**
+- `internal/` - Private packages
+- `api/` - Public interfaces (gRPC)
+- `models/` - Domain entities
+- `repository/` - Data access layer
+
+### Performance Optimization
+
+**Build Size**
+```bash
+# Optimized build
+go build -ldflags="-s -w" -o drone-app ./cmd/server
+
+# Docker image is already optimized (~30MB)
+```
+
+**Database** (already configured in `internal/db/db.go`)
+- WAL mode enabled for concurrency
+- Busy timeout set to 5 seconds
+- Foreign keys enforced
+
+**Deployment**
+- Use persistent volumes for database: `docker run -v drone-db:/var/lib/drone-app drone-app:latest`
+- Use multiple replicas for high availability (Kubernetes)
+
 ## Contributing
 
 1. Follow Go conventions
@@ -338,7 +423,7 @@ If you see "database is locked", check:
 
 ## License
 
-Proprietary - All rights reserved.
+MIT - All rights reserved.
 
 ## Support
 
